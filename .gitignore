@@ -1,0 +1,57 @@
+# 忽略规则 —— 这个仓库只放"可公开"的东西
+# 隐私 / 设备标识 / 大件 / 第三方内容，一律不入库
+
+# ── 设备标识与隐私（绝不公开）──
+*.serial
+device_id*
+*serial*\ndevice_serial*
+
+# ── 运行期日志与取证产物（体积大 + 含设备信息）──
+logs/
+logs_raw/
+*.out
+*_out/
+scene_*/
+sampler_*/
+autopsy_*/
+markers_*/
+evidence_raw/
+pstore/
+console-ramoops*
+pmsg-ramoops*
+dmesg-ramoops*
+timeline_*.txt
+proc_timeline.txt
+hunt_forensic_*.txt
+ksu_console_*.log
+
+# ── 大件 / 固件 / 内核镜像（厂商 IP + 体积）──
+*.img
+*.elf
+*.bin
+kallsyms.txt
+kernel_with_symbols.*
+boot*.img
+magisk_patched*
+
+# ── 第三方平台工具与克隆 ──
+platform-tools*/
+ghostlock_src/
+gl_ref_*/
+CyberMeowfia/
+fusion_release/
+CVE-2026-43499_ref/
+*.apk
+
+# ── 破损 / 临时 ──
+.git.broken.*
+*.bak
+*.orig
+*.rej
+*.tmp
+*~
+
+# ── 本机环境（避免泄露用户名与路径）──
+.adb/
+.env
+*.local

@@ -1,0 +1,14 @@
+﻿[  485.052181][ T7615] KernelSU: tp_marker: unmark process: pid:450, uid: 1069, comm:lmkd_watchdog
+[  485.053492][ T7615] KernelSU: tp_marker: unmark process: pid:1065, uid: 1000, comm:SWWatchDog
+[  485.054800][ T7615] KernelSU: tp_marker: unmark process: pid:1711, uid: 1000, comm:SWWatchDog
+[  485.056796][ T7615] KernelSU: tp_marker: unmark process: pid:3859, uid: 1013, comm:CCodecWatchdog
+[  485.058284][ T7615] KernelSU: tp_marker: unmark process: pid:1726, uid: 1000, comm:watchdog
+[  485.059825][ T7615] KernelSU: tp_marker: unmark process: pid:2283, uid: 1000, comm:CCodecWatchdog
+[  485.060933][ T7615] KernelSU: tp_marker: unmark process: pid:2914, uid: 10146, comm:CCodecWatchdog
+[  485.061959][ T7615] KernelSU: tp_marker: unmark process: pid:3951, uid: 1073, comm:Okio Watchdog
+[  485.064543][ T7615] KernelSU: tp_marker: unmark process: pid:3227, uid: 1000, comm:CCodecWatchdog
+[  485.066228][ T7615] KernelSU: tp_marker: unmark process: pid:4044, uid: 1000, comm:Okio Watchdog
+[  487.137580][Txxxxx] Kernel panic - not syncing: Attempted to kill init! exitcode=0x00007f00
+[  487.137620][Txxxxx] Call trace:
+[  487.137797][Txxxxx] Kernel Offset: 0x2c3be00000 from 0xffffffc008000000
+[  487.194172][Txxxxx] Kernel Offset: 0x2c3be00000 from 0xffffffc008000000

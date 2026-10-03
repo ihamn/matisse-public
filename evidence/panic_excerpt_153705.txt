@@ -1,0 +1,8 @@
+﻿[  155.506269][  T121] [wdtk] kick watchdog
+[  171.006501][  T121] [wdtk] kick watchdog
+[  183.925858][Txxxxx] Unable to handle kernel paging request at virtual address 000003fdffb532c8
+[  183.925892][Txxxxx] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+[  183.945195][Txxxxx] Kernel Offset: 0x1330600000 from 0xffffffc008000000
+[  183.945207][Txxxxx] pc : [0xffffffd338b20384] lock_page_memcg+0x24/0x1dc
+[  183.945211][Txxxxx] lr : [0xffffffd338aa227c] page_remove_rmap+0x3c/0x570
+[  183.945508][Txxxxx] Call trace:

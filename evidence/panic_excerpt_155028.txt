@@ -1,0 +1,9 @@
+﻿[  501.585360][ T6053] KernelSU: tp_marker: unmark process: pid:2911, uid: 10146, comm:CCodecWatchdog
+[  501.586419][ T6053] KernelSU: tp_marker: unmark process: pid:3993, uid: 1073, comm:Okio Watchdog
+[  501.589973][ T6053] KernelSU: tp_marker: unmark process: pid:3229, uid: 1000, comm:CCodecWatchdog
+[  501.591365][ T6053] KernelSU: tp_marker: unmark process: pid:4043, uid: 1000, comm:Okio Watchdog
+[  512.013701][  T121] [wdtk] kick watchdog
+[  522.896584][Txxxxx] Kernel panic - not syncing: Attempted to kill init! exitcode=0x00007f00
+[  522.896604][Txxxxx] Call trace:
+[  522.896674][Txxxxx] Kernel Offset: 0x109fc00000 from 0xffffffc008000000
+[  522.911031][Txxxxx] Kernel Offset: 0x109fc00000 from 0xffffffc008000000

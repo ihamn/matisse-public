@@ -1,0 +1,64 @@
+#!/system/bin/sh
+# fdsh2.sh — 用 KO 自身占位 fd 3..60 (v8.44)
+# 目的: 让 exploit 预开 KO 拿到**高位 fd**, 避开它自己 prep 对低号 fd 的 churn;
+#       占位 fd 本身即有效 KO fd, 不依赖 /dev/null。
+KO=${KO_PATH:-/data/local/tmp/ko_v330.ko}
+exec 3<$KO
+exec 4<$KO
+exec 5<$KO
+exec 6<$KO
+exec 7<$KO
+exec 8<$KO
+exec 9<$KO
+exec 10<$KO
+exec 11<$KO
+exec 12<$KO
+exec 13<$KO
+exec 14<$KO
+exec 15<$KO
+exec 16<$KO
+exec 17<$KO
+exec 18<$KO
+exec 19<$KO
+exec 20<$KO
+exec 21<$KO
+exec 22<$KO
+exec 23<$KO
+exec 24<$KO
+exec 25<$KO
+exec 26<$KO
+exec 27<$KO
+exec 28<$KO
+exec 29<$KO
+exec 30<$KO
+exec 31<$KO
+exec 32<$KO
+exec 33<$KO
+exec 34<$KO
+exec 35<$KO
+exec 36<$KO
+exec 37<$KO
+exec 38<$KO
+exec 39<$KO
+exec 40<$KO
+exec 41<$KO
+exec 42<$KO
+exec 43<$KO
+exec 44<$KO
+exec 45<$KO
+exec 46<$KO
+exec 47<$KO
+exec 48<$KO
+exec 49<$KO
+exec 50<$KO
+exec 51<$KO
+exec 52<$KO
+exec 53<$KO
+exec 54<$KO
+exec 55<$KO
+exec 56<$KO
+exec 57<$KO
+exec 58<$KO
+exec 59<$KO
+exec 60<$KO
+exec "$@"

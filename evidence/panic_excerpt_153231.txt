@@ -1,0 +1,4 @@
+﻿[   31.497506][  T121] [wdtk] kick watchdog
+[   46.997574][  T121] [wdtk] kick watchdog
+[   52.605764][    T1] syscon-reboot-mode 1c007000.watchdog:reboot-mode: shutdown
+[   52.605808][    T1] mtk-wdt 1c007000.watchdog: shutdown
