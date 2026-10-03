@@ -4,7 +4,8 @@
 # ── 设备标识与隐私（绝不公开）──
 *.serial
 device_id*
-*serial*\ndevice_serial*
+*serial*
+device_serial*
 
 # ── 运行期日志与取证产物（体积大 + 含设备信息）──
 logs/

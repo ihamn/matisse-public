@@ -16,9 +16,10 @@
 - 完整的 exploit 源码（`payload_src/`）—— 你可以逐行读、自己编译、比对哈希
 - 全部脚本与判据（`tools/`、`ksu_persist.sh`）—— 包括**失败的那些尝试**
 - 真实的内核 panic 摘录（`evidence/`）—— 证明我们遇到的崩机与其根因
+  - 构建配方与产物哈希（`payload_src/mt87_build/BUILD_INFO.txt`、`SHA256SUMS`）—— 供你比对
 - 明确的**适用边界与免责声明**（见下）
 
-**不包含**：任何设备标识（序列号 / MAC）、个人数据、第三方未授权代码。
+**不包含**：任何设备标识（序列号 / MAC）、个人数据。第三方派生代码的来源与许可**逐条列在 [`NOTICE.md`](NOTICE.md) 与 [`payload_src/PROVENANCE.md`](payload_src/PROVENANCE.md)**。
 
 ---
 
@@ -33,6 +34,9 @@
 | 设备未崩机 | 全程同一 `boot_id`，`uptime` 连续增长 |
 
 完整战报：[WIN_20261003_1620_uid0_kernelsu.md](WIN_20261003_1620_uid0_kernelsu.md)
+
+  > **核验**：本仓库发布产物的哈希见 [`SHA256SUMS`](SHA256SUMS)；exploit 产物的构建配方与期望 sha256 见
+  > [`payload_src/mt87_build/BUILD_INFO.txt`](payload_src/mt87_build/BUILD_INFO.txt)。若你不信任任何二进制，请只使用源码自行编译。
 
 ---
 
@@ -82,7 +86,9 @@ tools/                      编排与取证工具（连抽、尸检、pstore 抢
 payload_src/mt87_build/     exploit 源码（C）与构建信息（含 kernel target 偏移）
 ko_patched/                 KernelSU LKM 变体（GPL-3.0 衍生，见 NOTICE）
 evidence/                   脱敏后的真实内核 panic 摘录（pc / Call trace / Kernel Offset）
-docs/                       过程文档与复盘
+SHA256SUMS                  本仓库发布产物的 sha256
+SECURITY.md                 安全、副作用与披露
+payload_src/PROVENANCE.md   payload_src 的逐文件来源
 ```
 
 ---
@@ -94,6 +100,9 @@ docs/                       过程文档与复盘
 - **前提**：设备是你自己的、已开启 USB 调试 / Shizuku；**无需解锁 bootloader**。
 - **稳定性**：R/C 两步存在**结构性概率崩机**（伪页在 rmap/memcg 回收路径被解引用等，见 `evidence/`）。
   崩机会自动重启，**一般不损坏数据**，但请自行评估风险。
+  - **副作用（务必知情）**：拿到 root 后，载荷会 ① 往 `/apex/com.android.virt/bin/su` 安装 su 守护进程；
+  ② **替换当前壁纸**（原图备份到 `/data/system/users/0/wallpaper_orig`）；③ 把 SELinux 置为 Permissive；
+  ④ 把主机名改为 `glroot`。详见 [`SECURITY.md`](SECURITY.md)。
 - **持久化**：LKM late-load 是**每 boot 一次**；重启后需重跑。真正的开机持久化需要刷入修补过的
   boot 镜像（即需要解锁 bootloader），本仓库不提供、也不建议。
 
@@ -103,4 +112,4 @@ docs/                       过程文档与复盘
 - 本仓库以 **GPL-3.0** 发布；其中 KernelSU 及其衍生二进制（`ko_patched/`）遵循 KernelSU 的
   **GPL-3.0** 许可，版权归 KernelSU 项目所有（见 `NOTICE`）。
 - 第三方项目（如 GhostLock、CyberMeowfia 的研究仓库）**未包含**在本仓库中；如需请自行获取并遵守其许可。
-- 若你是相关厂商的安全团队并希望协调披露，请开 issue。
+- 若你是相关厂商的安全团队，或你是被引用项目的作者并希望协调披露/更正归属，请开 issue（见 [`SECURITY.md`](SECURITY.md)）。
