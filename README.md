@@ -1,4 +1,4 @@
-# matisse-root — Redmi K50 Pro (MT6983) / kernel 5.10.209 提权与 KernelSU 装载记录
+# matisse-public — Redmi K50 Pro (MT6983) / kernel 5.10.209 提权与 KernelSU 装载记录
 
 > **English TL;DR** — A fully documented, from-scratch writeup + toolkit for obtaining `uid=0` with a
 > kernel SID on a **Redmi K50 Pro (matisse, MediaTek MT6983, kernel 5.10.209)** and loading **KernelSU via
@@ -55,9 +55,10 @@
 ### 在电脑上（USB adb 驱动，最完整）
 
 ```bash
-git clone <this-repo> && cd matisse-root
+git clone https://github.com/ihamn/matisse-public.git && cd matisse-public
 # 依赖：adb（自备 platform-tools）、bash、一部已开启 USB 调试的 matisse
-bash tools/win_loop.sh 12          # 连抽最多 12 轮，命中判据即停手
+bash tools/win_loop.sh 12     # 连抽最多 12 轮，命中判据即停手
+# 注意: 电脑侧需要自备 adb (Google platform-tools), 本仓库不分发
 # 判据：/proc/modules 出现 kernelsu  或  /data/local/tmp/ksu_go.log 里 late-load rc=0
 ```
 
