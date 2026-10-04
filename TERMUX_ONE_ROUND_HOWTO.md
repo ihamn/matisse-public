@@ -11,11 +11,15 @@
 3. Shizuku 里点「**使用此应用**」→ 把 **`rish`** 复制到 Termux 的 `~/`
    （脚本会自动在 `~/`、`~/rish/`、`/sdcard/Download/` 找它 ✓）
 
+4. **构建 payload**：本仓库只发布**源码**，不含 `bin/mt87/preload.so`。
+   按 [`payload_src/mt87_build/BUILD_INFO.txt`](payload_src/mt87_build/BUILD_INFO.txt) 的配方自行编译（Termux clang 即可），
+   把产物放到 `bin/mt87/preload.so`（脚本第 0 步会提示路径）。SHA256 见 [`SHA256SUMS`](SHA256SUMS)。
+
 ## 二、每次要提权时（重启后）
 在 Termux 里：
 ```bash
-cd ~/matisse 2>/dev/null || git clone https://gitee.com/ihamn/matisse.git ~/matisse
-cd ~/matisse && git pull
+cd ~/matisse-public 2>/dev/null || git clone https://github.com/ihamn/matisse-public.git ~/matisse-public
+cd ~/matisse-public  # 公开版: 不访问任何远端仓库, 无需 git pull; 证据只写本地 logs_raw/ (已被 .gitignore 忽略)
 bash tools/termux_one_round.sh
 ```
 - 脚本会自己检查：**本 boot 已经是 root ⇒ 直接退出**（不白打）✓

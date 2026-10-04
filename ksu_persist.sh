@@ -79,14 +79,12 @@ MATISSE_SKIP_E5="${MATISSE_SKIP_E5:-1}"
 MATISSE_CHILD_POLLS="${MATISSE_CHILD_POLLS:-36000}"
 WINDOW="$MATISSE_WINDOW"; SPACING="$MATISSE_SPACING"
 SELF_DIR=$(cd "$(dirname "$0")" 2>/dev/null && pwd || echo "")
-TOKEN=$(cat "$HOME/.matisse_token" 2>/dev/null | tr -d ' \r\n' || true)
-REPO_URL="https://ihamn:${TOKEN}@gitee.com/ihamn/matisse.git"
-[ -n "$TOKEN" ] || REPO_URL="https://gitee.com/ihamn/matisse.git"
-WORK="$HOME/matisse"
-if [ "$MATISSE_ADB" = "1" ] && [ -n "$SELF_DIR" ] && [ -d "$SELF_DIR/.git" ]; then
-  WORK="$SELF_DIR"   # 笔记本模式: 脚本已在克隆好的仓库里, 不再 clone
-  mkdir -p "$WORK/logs_raw" 2>/dev/null
-fi
+# 公开版: 不使用任何 git / 远端 / 凭据。
+# 工作目录 = 脚本所在目录(即你 clone 下来的这个公开仓库); 可用 MATISSE_WORK 覆盖。
+WORK="${MATISSE_WORK:-$SELF_DIR}"
+[ -n "$WORK" ] || WORK="$PWD"
+[ -d "$WORK" ] || WORK="$HOME/matisse"
+mkdir -p "$WORK/logs_raw" 2>/dev/null
 RUN_TS=$(date +%Y%m%d_%H%M%S)
 # ── v8.30 (2026-10-03 10:40, BUG #18 结构性修复) ──
 # 设备侧所有文件都放**每轮全新的目录**里:
@@ -96,22 +94,18 @@ RUN_TS=$(date +%Y%m%d_%H%M%S)
 # 调用方用 MATISSE_TMPD 指定; 默认仍是 /data/local/tmp。
 TMPD="${MATISSE_TMPD:-/data/local/tmp}"
 mkdir -p "$TMPD" 2>/dev/null
-CONSOLE_LOG="$HOME/ksu_console_${RUN_TS}.log"
-if [ "$WORK" != "$HOME/matisse" ]; then CONSOLE_LOG="$WORK/logs_raw/ksu_console_${RUN_TS}.log"; fi
+CONSOLE_LOG="$WORK/logs_raw/ksu_console_${RUN_TS}.log"
 PUSHED=0; EXTRA=""
 command -v termux-wake-lock >/dev/null 2>&1 && termux-wake-lock 2>/dev/null
 exec > >(tee -a "$CONSOLE_LOG") 2>&1
 say(){ echo "[hunt $(date +%H:%M:%S)] $*"; }
 SHIZUKU_HINT="!! Shizuku 连接不稳: 设置->应用->Termux和Shizuku->省电策略[无限制], 插电+亮屏, 重跑本脚本"
 
-# ── 0. git/仓库 ──
-say "第0步: 仓库"
-if command -v pkg >/dev/null 2>&1; then command -v git >/dev/null 2>&1 || pkg install -y git >/dev/null 2>&1; fi
-[ -d "$WORK/.git" ] || git clone -q "$REPO_URL" "$WORK" || { say "克隆失败"; exit 1; }
-cd "$WORK" || exit 1
-git config user.name "field-termux"; git config user.email "field@termux.local"
-git pull -q --rebase origin master 2>/dev/null || true
-say "仓库: $(git log --oneline -1 | cut -c1-60)"
+# ── 0. 工作目录 (公开版: 无 git / 无远端 / 不 clone / 不 pull / 不 push) ──
+say "第0步: 工作目录"
+cd "$WORK" || { say "!! 工作目录不存在: $WORK"; exit 1; }
+say "工作目录: $WORK"
+[ -f "$WORK/bin/mt87/preload.so" ] || say "!! 提示: 未找到 payload ($WORK/bin/mt87/preload.so) — 请先用 payload_src/ 构建"
 
 # ── 1. 传输层: USB adb (笔记本) 或 rish (手机 Shizuku) ──
 if [ "$MATISSE_ADB" = "1" ]; then
@@ -301,8 +295,7 @@ say "取证: 线程=$RES D/R=$STUCK"
 if [ "${RES:-0}" -gt 0 ]; then
   say "!! 有残留进程 (D/R=$STUCK) — 请重启手机, 10 分钟后重跑本脚本"
   cp "$CONSOLE_LOG" "$WORK/logs_raw/ksu_console_${RUN_TS}.log" 2>/dev/null
-  git add -A >/dev/null 2>&1; git commit -q -m "hunt forensics ${RUN_TS}: residue threads=$RES D/R=$STUCK - reboot requested" >/dev/null 2>&1 || true
-  for i in 1 2 3; do git pull -q --rebase origin master 2>/dev/null; git push -q origin master 2>/dev/null && break; sleep 10; done
+  say "证据已留在本地: $WORK/logs_raw/ksu_console_${RUN_TS}.log (公开版不做任何提交/推送)"
   exit 5
 fi
 say "无残留, 继续"
@@ -866,20 +859,12 @@ ROOT_SEEN=$(grep -ah "ROOT-SEEN.*euid=0" "$WORK/logs_raw/ksu_hunt_$RUN_TS/"*.out
   echo "- 终局活体: $(rsh 'getenforce; uname -n' 20 | tr -d '\r' | tr '\n' ' ')"
 } > "$WORK/logs_raw/ksu_hunt_$RUN_TS/CARD.md"
 cp "$CONSOLE_LOG" "$WORK/logs_raw/ksu_console_${RUN_TS}.log" 2>/dev/null
-# v8.14 (2026-10-03 00:58 夜跑 BUG 修复): 允许关闭「每轮自动 commit+push」。
-# 原因: 夜跑几十轮会把每轮 ~1-5MB 的 logs_raw/*.out 全塞进 gitee (仓库膨胀 + 每轮变慢),
-# 而且脚本的 `git add -A` 会与分析侧(我)对同一工作区的修改**竞争** -> rebase 冲突/推送失败。
-# 夜跑设 MATISSE_NO_GIT=1: 证据留在本地磁盘, 由分析侧周期性精选提交。
-if [ "${MATISSE_NO_GIT:-0}" = "1" ]; then
-  say "MATISSE_NO_GIT=1: 跳过自动 commit/push (证据留在本地 $WORK/logs_raw/ksu_hunt_$RUN_TS)"
-else
-  git add -A >/dev/null 2>&1
-  git commit -q -m "KSU hunt ${RUN_TS}: R11=$R11_GATE C=$C_FIRED ksu_mod=$KSU_MOD root_alive=$ROOT_ALIVE ksu_done=$KSU_DONE host=$HN" || true
-  for i in 1 2 3; do git pull -q --rebase origin master 2>/dev/null; git push -q origin master 2>/dev/null && { PUSHED=1; break; }; sleep 10; done
-fi
+# 公开版: 不做任何 git 操作。证据全部留在本地 (logs_raw/ 已被 .gitignore 忽略)。
+say "证据已留在本地: $WORK/logs_raw/ksu_hunt_$RUN_TS (公开版不提交/不推送)"
+PUSHED=0
 command -v termux-wake-unlock >/dev/null 2>&1 && termux-wake-unlock 2>/dev/null
 say "=========================================="
 say "终局: R11=$R11_GATE | C=$C_FIRED | ksu模块=$KSU_MOD | root_alive=$ROOT_ALIVE | ksu_done=$KSU_DONE | host=$HN"
 [ "$KSU_MOD" -ge 1 ] 2>/dev/null && say "★★★ KSU 持久 root 完成 ★★★"
 [ "$ROOT_ALIVE" = "YES" ] && say "★★★ ROOT-ALIVE 证据落盘 ★★★"
-[ "$PUSHED" = 1 ] && say "全部数据已推回 gitee" || say "推送失败! 发 $CONSOLE_LOG 给分析侧"
+say "本地证据目录: $WORK/logs_raw/ksu_hunt_$RUN_TS"
